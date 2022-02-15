@@ -93,22 +93,24 @@ const deploy = ({
       .toString()
       .trim();
 
-    console.log("Remote barnch is: " + remote_branch);
-    if (remote_branch === "master") {
-      console.log("Installing heroku-repo plugin");
-      execSync("heroku plugins:install heroku-repo");
-      console.log("Reseting Heroku repository");
-      execSync("heroku repo:reset -a " + app_name);
-    }
+    console.log("Remote branch is: " + remote_branch);
+    // if (remote_branch === "master") {
+      // console.log("Installing heroku-repo plugin");
+      // execSync("heroku plugins:install heroku-repo");
+      // console.log("Reseting Heroku repository");
+      // execSync("heroku repo:reset -a " + app_name);
+    // }
 
     if (appdir === "") {
       console.log(`Pushing branch ${branch}:refs/heads/main ${force} to heroku`);
-      execSync(`git push heroku ${branch}:refs/heads/main ${force}`, {
+      // execSync(`git push heroku ${branch}:refs/heads/main ${force}`, {
+      execSync(`git push heroku ${branch} ${force}`, {
         maxBuffer: 104857600,
       });
     } else {
       execSync(
-        `git push ${force} heroku \`git subtree split --prefix=${appdir} ${branch}\`:refs/heads/main`,
+        // `git push ${force} heroku \`git subtree split --prefix=${appdir} ${branch}\`:refs/heads/main`,
+        `git push ${force} heroku \`git subtree split --prefix=${appdir} ${branch}\``,
         { maxBuffer: 104857600 }
       );
     }
