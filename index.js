@@ -18,7 +18,7 @@ EOF`;
 
 const addRemote = ({ app_name, dontautocreate, buildpack, region, team, stack }) => {
   try {
-    console.log("Adding heroku as git remote");
+    console.log("Adding heroku as git remote: " + app_name);
     execSync("heroku git:remote --app " + app_name);
     console.log("Added git remote heroku");
   } catch (err) {
@@ -102,7 +102,7 @@ const deploy = ({
     // }
 
     if (appdir === "") {
-      console.log(`Pushing branch ${branch}:refs/heads/main ${force} to heroku`);
+      console.log(`Pushing branch ${branch} ${force} to heroku`);
       // execSync(`git push heroku ${branch}:refs/heads/main ${force}`, {
       execSync(`git push heroku ${branch} ${force}`, {
         maxBuffer: 104857600,
