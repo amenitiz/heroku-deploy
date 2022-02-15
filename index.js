@@ -18,11 +18,13 @@ EOF`;
 
 const addRemote = ({ app_name, dontautocreate, buildpack, region, team, stack }) => {
   try {
+    console.log("Adding heroku as git remote");
     execSync("heroku git:remote --app " + app_name);
     console.log("Added git remote heroku");
   } catch (err) {
     if (dontautocreate) throw err;
 
+    console.log("Creating a new app");
     execSync(
       "heroku create " +
         app_name +
@@ -51,6 +53,7 @@ const addConfig = ({ app_name, env_file, appdir }) => {
     configVars = [...configVars, ...newVars];
   }
   if (configVars.length !== 0) {
+    console.log(`Setting Heroku env variables: ${configVars.join(" ")}`);
     execSync(`heroku config:set --app=${app_name} ${configVars.join(" ")}`);
   }
 };
@@ -83,18 +86,23 @@ const deploy = ({
       appdir ? { cwd: appdir } : null
     );
   } else {
+    console.log("Looking for the branch with HEAD");
     let remote_branch = execSync(
       "git remote show heroku | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'"
     )
       .toString()
       .trim();
 
+    console.log("Remote barnch is: " + remote_branch);
     if (remote_branch === "master") {
+      console.log("Installing heroku-repo plugin");
       execSync("heroku plugins:install heroku-repo");
+      console.log("Reseting Heroku repository");
       execSync("heroku repo:reset -a " + app_name);
     }
 
     if (appdir === "") {
+      console.log(`Pushing branch ${branch}:refs/heads/main ${force} to heroku`);
       execSync(`git push heroku ${branch}:refs/heads/main ${force}`, {
         maxBuffer: 104857600,
       });
@@ -185,10 +193,12 @@ if (heroku.dockerBuildArgs) {
       return;
     }
 
+    console.log("Config Git user.name and user.email");
     execSync(`git config user.name "Heroku-Deploy"`);
     execSync(`git config user.email "${heroku.email}"`);
     const status = execSync("git status --porcelain").toString().trim();
     if (status) {
+      console.log("WARNING: We have uncommited changes, committing them");
       execSync(
         'git add -A && git commit -m "Commited changes from previous actions"'
       );
